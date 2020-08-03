@@ -1,0 +1,55 @@
+---
+title: "test_qwraps"
+author: "Modji, Komi"
+date: "8/2/2020"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+
+```{r,echo=F, message=F, warning=F}
+library(qwraps2)
+library(tidyverse, quietly = T)
+options(qwraps2_markup = "markdown") # include results = "asis" in the r brackets of the results output for pretty tables
+library(kableExtra)
+
+
+```
+
+```{r, include=FALSE}
+dataec<-read.csv("C:/COVID-19/Chip_valley/Eau_Claire_Modeling/data_team/ECNEW.csv",header=T, na.strings=c(""," ","NA","  "), stringsAsFactors=F )
+glimpse(dataec)
+str(dataec)
+dataec<-filter(dataec, !is.na(dataec$NEGATIVE))
+mean_sd(dataec$NEGATIVE, denote_sd = "paren")
+negci<-mean_ci(dataec$NEGATIVE)
+negci
+print(negci, show_level=T)
+median_iqr(dataec$NEGATIVE)
+n_perc(dataec$NEGATIVE<=2500)
+n_perc0(dataec$NEGATIVE<=2500)
+
+our_sum<-
+  list("Negative case"=
+         list("min" = ~min(.data$NEGATIVE),
+              "max" = ~max(.data$NEGATIVE),
+              "mean" = ~mean(.data$NEGATIVE)),
+       "Positive case"=
+         list("min"= ~min(.data$POSITIVE),
+              "max"= ~max(.data$POSITIVE),
+              "Average"= ~mean(.data$POSITIVE))
+       )
+
+whole<-summary_table(dataec, our_sum)
+```
+
+
+```{r,echo=FALSE,results = "asis"}
+
+kable(whole)
+print(whole, rtitle="Item", cnames = "statistics")
+print(whole, rtitle="Item", cnames = "statistics",booktabs = TRUE,caption="Example table")
+```
+
